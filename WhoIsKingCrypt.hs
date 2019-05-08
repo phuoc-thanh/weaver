@@ -34,9 +34,8 @@ Data
 
 {- Encrypt Procedure
 
-Most packet use  plain base16 (hexString) encode, so decode is super easy.
-Some special packets was sent as reversed-order-bytes after encode with base16. 
-So if I use bytestring, just calculate header then append it to data.
+Who is King uses base16 (hexadecimal) for transfer encoding, so decode work is super easy.
+Some special packets was sent as reversed-order-bytes after encoded with base16. 
 
 somePacket = append (hexSerialize $ length m) m 
    where m = append "sample_msg" "\NUL"
