@@ -83,6 +83,28 @@ xor_fold xs = foldr (xor) 0 xs
 split_every _ [] = []
 split_every n xs = fs : split_every n rs where (fs, rs) = splitAt n xs
 
+-- Packet is first XOR encoded with <code>key</code>
+-- Then, the last 4 bytes are overwritten with the the XOR "key".
+--encXor bytes key
+
+encw :: [Word8] -> Word8
+encw bs@(x:y:z:w:s)
+    | length bs /= 4 = 0x00
+    | otherwise      = ex .|. ey .|. ez .|. ew where
+      ex = x .&. 0xff
+      ey = shiftL (y .&. 0xff) 0x08
+      ez = shiftL (z .&. 0xff) 0x16
+      ew = shiftL (w .&. 0xff) 0x24
+
+encw2 :: [Word8] -> Word8 -> [Word8]
+encw2 bs e
+    | length bs /= 4 = []
+    | otherwise      = [x,y,z,w] where
+      x = e .&. 0xff
+      y = e `shiftL` 0x08 .&. 0xff
+      z = e `shiftL` 0x16 .&. 0xff 
+      w = e `shiftL` 0x24 .&. 0xff
+
 nameVerifyReq1 :: ByteString
 -- Request Name: weaverzero (10chars)
 -- 56456427bb5af848: 8 same bytes from 2 requests
