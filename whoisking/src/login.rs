@@ -19,17 +19,17 @@ const LOGIN_PREFIX: &'static str = "LOGIN 0.0.1 2";
 pub struct Credential {
     username: String,
     userid: u32,
-    cfg_server: u16,
+    pub cfg_server: u16,
 
     // Dynamic Parts, recv from a http call to auth server
     // Cannot capture these info
 
     // Receive from a TLS session (443)
-    timestamp: i64,
+    pub timestamp: i64,
 
     // Receive from a TLS session (443)
     // What is this? Seem like a md5 hash?
-    hash_str: String,
+    pub hash_str: String,
 }
 
 impl Credential {
