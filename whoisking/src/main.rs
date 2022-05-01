@@ -13,8 +13,8 @@ mod config;
 mod login;
 mod packet;
 
-fn main() {
-    let credential = Credential::cfg_credential().unwrap();
+/// Auto write to a pre-config connection stream.
+fn write_stream(credential: Credential) {
     let server = server_addr(8000 + credential.cfg_server);
 
     let login_msg = with_header(HeaderKind::Login, credential.login());
@@ -35,6 +35,20 @@ fn main() {
     for _ in 1..100 {
         stream.write(&bet_msg).expect("bet failed");
     }
+}
 
-    println!("End of program!");
+fn main() -> Result<(), std::io::Error> {
+    let credentials = Credential::cfg_credentials()?;
+
+    for credential in credentials {
+        thread::spawn(|| write_stream(credential));
+    }
+
+    // Single thread
+    // let credential = Credential::cfg_credential().unwrap();
+    // write_stream(credential);
+
+    thread::sleep(Duration::from_secs(10));
+    println!("Packets sent, please wait 10 secs!");
+    Ok(())
 }

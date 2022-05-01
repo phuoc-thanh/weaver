@@ -6,6 +6,8 @@
 /// BlackGO s5: 5000245
 /// Cocain s5: 5000009
 /// LamQuang s9: 9000138
+/// Linh s4: 4000280
+/// Embe s5: 5000058
 pub fn cross_server_war(pid: u32, amount: u32) -> Box<[u8]> {
     let prefix = "crossserverwar betting ";
     let player = format!("{}{}", pid, " ");

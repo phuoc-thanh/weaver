@@ -15,7 +15,7 @@ use serde::{Deserialize, Serialize};
 /// [LoginPrefix] - [20] - [GameServerNo] - [20] - [Username] - [20] - [31,32,33] - [20] - [timestamp] - [20] - [hash] - [20] - [30] - [00]
 const LOGIN_PREFIX: &'static str = "LOGIN 0.0.1 2";
 
-#[derive(Default, Serialize, Deserialize)]
+#[derive(Debug, Default, Serialize, Deserialize)]
 pub struct Credential {
     username: String,
     userid: u32,
@@ -59,8 +59,20 @@ impl Credential {
     }
 
     /// Read credential.json file to get a Credential.
+    #[allow(dead_code)]
     pub fn cfg_credential() -> Result<Credential, serde_json::Error> {
         let file = File::open("credential.json").unwrap();
+        let mut contents = String::new();
+        let mut buf_reader = BufReader::new(file);
+
+        buf_reader.read_to_string(&mut contents).unwrap();
+        serde_json::from_str(&contents)
+    }
+
+    /// Read credentials.json file to get multiples Credentials.
+    #[allow(dead_code)]
+    pub fn cfg_credentials() -> Result<Vec<Credential>, serde_json::Error> {
+        let file = File::open("credentials.json").unwrap();
         let mut contents = String::new();
         let mut buf_reader = BufReader::new(file);
 
