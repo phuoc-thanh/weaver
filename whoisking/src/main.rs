@@ -14,27 +14,29 @@ mod login;
 mod packet;
 
 /// Auto write to a pre-config connection stream.
-fn write_stream(credential: Credential) {
+fn write_stream(credential: Credential) -> Result<(), std::io::Error> {
     let server = server_addr(8000 + credential.cfg_server);
 
     let login_msg = with_header(HeaderKind::Login, credential.login());
     let enter_msg = with_header(HeaderKind::Enter, credential.enter_world());
     let bet_msg = with_header(HeaderKind::Normal, cross_server_war(9000012, 50000));
 
-    let mut stream = TcpStream::connect(server).expect("Cannot bind tcp stream");
+    let mut stream = TcpStream::connect(server)?;
 
-    stream.write(&login_msg).expect("Cannot login");
-    stream.read(&mut [0; 256]).expect("Cannot recv login msg");
+    stream.write(&login_msg)?;
+    stream.read(&mut [0; 256])?;
 
-    stream.write(&enter_msg).expect("Cannot enter");
-    stream.read(&mut [0; 80]).expect("Cannot recv enter msg");
+    stream.write(&enter_msg)?;
+    stream.read(&mut [0; 80])?;
 
     thread::sleep(Duration::from_secs(3));
 
     // Performance: 7x accepted
     for _ in 1..100 {
-        stream.write(&bet_msg).expect("bet failed");
+        stream.write(&bet_msg)?;
     }
+
+    Ok(())
 }
 
 fn main() -> Result<(), std::io::Error> {
