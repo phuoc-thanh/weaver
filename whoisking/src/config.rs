@@ -1,6 +1,7 @@
 use std::{net::SocketAddr, num::ParseIntError};
 
-const SERVER_IP: [u8; 4] = [103, 172, 79, 136];
+const SERVER_IP_01: [u8; 4] = [103, 172, 79, 136];
+const SERVER_IP_02: [u8; 4] = [103, 172, 79, 137];
 
 pub enum HeaderKind {
     Login = 1,
@@ -8,8 +9,14 @@ pub enum HeaderKind {
     Normal = 3,
 }
 
-pub fn server_addr(port: u16) -> SocketAddr {
-    SocketAddr::from((SERVER_IP, port))
+pub fn server_addr(cfg_server: u16) -> SocketAddr {
+    let server_ip = match cfg_server {
+        p if p > 10 => SERVER_IP_02,
+        _ => SERVER_IP_01,
+    };
+
+    let port = 8000 + (cfg_server % 10);
+    SocketAddr::from((server_ip, port))
 }
 
 /// Encode a packet with header

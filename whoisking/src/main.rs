@@ -15,13 +15,14 @@ mod packet;
 
 /// Auto write to a pre-config connection stream.
 fn write_stream(credential: Credential) -> Result<(), std::io::Error> {
-    let server = server_addr(8000 + credential.cfg_server);
+    let server = server_addr(credential.cfg_server);
 
     let login_msg = with_header(HeaderKind::Login, credential.login());
     let enter_msg = with_header(HeaderKind::Enter, credential.enter_world());
     let bet_msg = with_header(HeaderKind::Normal, cross_server_war(9000012, 50000));
 
     let mut stream = TcpStream::connect(server)?;
+    println!("Connection established: {:?}", server);
 
     stream.write(&login_msg)?;
     stream.read(&mut [0; 256])?;
@@ -40,15 +41,15 @@ fn write_stream(credential: Credential) -> Result<(), std::io::Error> {
 }
 
 fn main() -> Result<(), std::io::Error> {
-    let credentials = Credential::cfg_credentials()?;
+    // let credentials = Credential::cfg_credentials()?;
 
-    for credential in credentials {
-        thread::spawn(|| write_stream(credential));
-    }
+    // for credential in credentials {
+    //     thread::spawn(|| write_stream(credential));
+    // }
 
     // Single thread
-    // let credential = Credential::cfg_credential().unwrap();
-    // write_stream(credential);
+    let credential = Credential::cfg_credential()?;
+    write_stream(credential)?;
 
     thread::sleep(Duration::from_secs(10));
     println!("Packets sent, please wait 10 secs!");
